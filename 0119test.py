@@ -32,13 +32,13 @@ area = width * height
 
 
 
-object_detector = cv2.createBackgroundSubtractorMOG2()
+# object_detector = cv2.createBackgroundSubtractorMOG2()
 
 # 初始化平均影像
 ret, frame = cap.read()
 # cv2.imwrite("output_heat.jpg",frame)
-avg = cv2.blur(frame, (4, 4))
-# avg = cv2.GaussianBlur(frame, (3, 3),1)
+# avg = cv2.blur(frame, (4, 4))
+avg = cv2.GaussianBlur(frame, (3, 3),1)
 avg_float = np.float32(avg)
 
 #氣象站參數
@@ -76,8 +76,8 @@ while(cap.isOpened()):
     
     
     # 模糊處理
-    blur = cv2.blur(frame, (4, 4))
-    # blur = cv2.GaussianBlur(frame, (3, 3),1)
+    # blur = cv2.blur(frame, (4, 4))
+    blur = cv2.GaussianBlur(frame, (3, 3),1)
 
     # 計算目前影格與平均影像的差異值
     diff = cv2.absdiff(avg, blur)
@@ -116,9 +116,9 @@ while(cap.isOpened()):
             
             max_temp=max({str(x):y for x, y in zip(colorframe.tolist()[0], color_map)}.values())
             # print(max_temp)
-            max_temp=str(round(float(max_temp),2))
+            max_temp=round(float(max_temp),2)
             # max_temp=str(round(maxtemp,2))
-            cv2.putText(frame, max_temp, (int(x+w/2), y), cv2.FONT_HERSHEY_SIMPLEX,1, (255, 255, 255), 1, cv2.LINE_AA)
+            cv2.putText(frame, str(max_temp), (int(x+w/2), y), cv2.FONT_HERSHEY_SIMPLEX,1, (255, 255, 255), 1, cv2.LINE_AA)
             
             # # 畫出等高線（除錯用）
             # cv2.drawContours(frame, cntImg, -1, (0, 255, 255), 2)
