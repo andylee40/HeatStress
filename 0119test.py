@@ -8,12 +8,14 @@ Created on Thu Jan 19 16:02:45 2023
 
 import cv2
 import numpy as np
-from api_temp import *
+import sys
+sys.path.append(r'..')
+from heatstress.api_temp import *
 
 # 開啟網路攝影機
 # cap = cv2.VideoCapture(0)
 # cap = cv2.VideoCapture('rtsp://root:Admin1234@59.125.76.241:5540/live1s1.sdp')
-cap = cv2.VideoCapture('/Users/lihongcheng/Desktop/heatstress/0110_heat.mkv')
+cap = cv2.VideoCapture('/Users/lihongcheng/Desktop/heatstress/0201_heat.mkv')
 # cap = cv2.VideoCapture('rtsp://admin:Foxconn_88@59.125.76.241:5541/Streaming/Channels/201?transportmode=unicast&profile=Profile_201')
 
 # 設定影像尺寸
@@ -48,7 +50,6 @@ header={
     }
 method='get'
 
-sss
 while(cap.isOpened()):
     
     # 讀取一幅影格
@@ -69,9 +70,9 @@ while(cap.isOpened()):
     mintemp=4
     
     #對照顏色
-    ap = np.linspace(maxtemp,mintemp,52)
-    colorbar=frame[100:617,1268:1269].reshape([517,3])[::10 ]
-    color_map = {str(x):y for x, y in zip(ap.tolist(), colorbar.tolist())}
+    ap = np.linspace(maxtemp,mintemp,256)
+    # colorbar=frame[100:617,1268:1269].reshape([517,3])[::10 ]
+    color_map = {str(x):y for x, y in zip(ap.tolist(), np.arange(0,256)[::-1].tolist())}
     
     
     # 模糊處理
@@ -85,7 +86,7 @@ while(cap.isOpened()):
     gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
     cv2.imshow('gray', gray)
     # 篩選出變動程度大於門檻值的區域(25,255)
-    ret, thresh = cv2.threshold(gray, 60, 255, cv2.THRESH_BINARY)
+    ret, thresh = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY)
     # thresh= cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
     # 使用型態轉換函數去除雜訊
@@ -111,7 +112,7 @@ while(cap.isOpened()):
 
             # 畫出外框
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            colorframe=frame[x:x+w,y:y+h]
+            colorframe=frame[y:y+h,x:x+w]
             
             max_temp=max({str(x):y for x, y in zip(colorframe.tolist()[0], color_map)}.values())
             # print(max_temp)
